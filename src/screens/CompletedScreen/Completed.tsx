@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet } from "react-native";
 
 type CompletedProps = {
   navigation: any;
-  route: any; // 👈 Add this for route params
+  route: any; 
 };
 
 export const Completed: React.FC<CompletedProps> = ({ navigation, route }) => {

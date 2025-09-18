@@ -49,12 +49,11 @@ export const TodoScreens: React.FC<TodoScreensProps> = ({
 
   const completeTodo = (index: number) => {
     const todoToComplete = todos[index];
-    // add to completed
+    
     setCompletedTasks([...completedTasks, todoToComplete]);
-    // remove from active list
+    
     deleteTodo(index);
-    // optional: navigate directly to Completed screen
-    // navigation.navigate("Completed");
+  
   };
 
   return (
