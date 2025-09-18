@@ -9,8 +9,8 @@ import AppNavigator from './src/navigation/AppNavigator';
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-       <TodoScreens /> 
-       <Completed />
+       {/* <TodoScreens /> 
+       <Completed /> */}
        <AppNavigator />
        </SafeAreaView>
   );
