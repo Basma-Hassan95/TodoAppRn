@@ -78,6 +78,7 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.myfirstproject"
+     compileSdkVersion 36
     defaultConfig {
         applicationId "com.myfirstproject"
         minSdkVersion rootProject.ext.minSdkVersion

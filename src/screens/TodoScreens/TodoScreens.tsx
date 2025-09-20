@@ -9,6 +9,8 @@ import {
   Image,
 } from 'react-native';
 import { TodoItem } from '../../components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 type TodoScreensProps = {
@@ -25,26 +27,80 @@ export const TodoScreens: React.FC<TodoScreensProps> = ({
   const [task, setTask] = useState('');
   const [todos, setTodos] = useState<string[]>([]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-        headerRight: () => (
-            <TouchableOpacity onPress={() => alert("Profile Clicked!")}>
-                <Image source={{uri:"https://i.pinimg.com/736x/e9/3c/e7/e93ce71620845fd40020fb0b109bca47.jpg"}} style={{width: 30, height: 30, marginRight: 10}} />
-            </TouchableOpacity>
-        )
-    })
-  }, [navigation]);
 
-  const addTodo = () => {
-    if (task.trim() !== '') {
-      setTodos([...todos, task]);
-      setTask('');
+    const saveTodos = async (todosArray: string[]) => {
+    try {
+      await AsyncStorage.setItem('todos', JSON.stringify(todosArray));
+    } catch (error) {
+      console.log('Error saving todos:', error);
     }
   };
+
+   const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear(); 
+      navigation.replace("Login"); 
+    } catch (error) {
+      console.log("Error logging out:", error);
+    }
+  };
+
+   useLayoutEffect(() => {
+    navigation.setOptions({
+      // Left side → Hamburger Menu
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => navigation.toggleDrawer()}
+          style={{ marginLeft: 10 }}
+        >
+          <Text style={{ fontSize: 24 }}>☰</Text>
+        </TouchableOpacity>
+      ),
+
+    headerRight: () => (
+        <TouchableOpacity onPress={() => alert('Profile Clicked!')}>
+          <Image
+            source={{
+              uri: 'https://i.pinimg.com/736x/e9/3c/e7/e93ce71620845fd40020fb0b109bca47.jpg',
+            }}
+            style={{ width: 30, height: 30, marginRight: 10, borderRadius: 15 }}
+          />
+        </TouchableOpacity>
+      ),
+    });
+
+
+      const loadTodos = async () => {
+    try {
+      const savedTodos = await AsyncStorage.getItem('todos');
+      if (savedTodos) {
+        setTodos(JSON.parse(savedTodos));
+      }
+    } catch (error) {
+      console.log('Error loading todos:', error);
+    }
+  };
+
+  loadTodos();
+
+}, [navigation]);
+  
+
+  
+
+  const addTodo = () => {
+  if (task.trim() !== '') {
+    const newTodos = [...todos, task];  
+    setTodos(newTodos);
+    setTask('');
+    saveTodos(newTodos);                
+  }
+};
 
   const deleteTodo = (index: number) => {
     const newTodos = todos.filter((_, i) => i !== index);
     setTodos(newTodos);
+    saveTodos(newTodos);
   };
 
   const completeTodo = (index: number) => {
@@ -52,8 +108,10 @@ export const TodoScreens: React.FC<TodoScreensProps> = ({
     
     setCompletedTasks([...completedTasks, todoToComplete]);
     
-    deleteTodo(index);
-  
+    
+   const newTodos = todos.filter((_, i) => i !== index);
+  setTodos(newTodos);
+  saveTodos(newTodos); 
   };
 
   return (
